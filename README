@@ -1,0 +1,5 @@
+The goal of the project is to generate a wardrobe of clothes. Then we combine them to a outfit.
+After we have create a outfit, we want to check if the outfit is color harmonious. We use rules 
+which we can be found on blog sites and guides for color combination to decide if a outfit is 
+color harmonious. Therefore we just use the colors of the clothes and create a color palette for 
+the outfit and decide if the color palette meets the criterias of being color harmonious.
