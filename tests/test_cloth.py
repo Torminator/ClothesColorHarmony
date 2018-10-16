@@ -19,10 +19,10 @@ def colortype_table():
     return load_colortypes()
 
 def test_load_colortype1(colortype_table):
-    assert colortype_table["White"] == "White"
+    assert colortype_table["white"] == "White"
 
 def test_load_colortype2(colortype_table):
-    assert colortype_table["Teal"] == "Cyan"
+    assert colortype_table["teal"] == "Cyan"
 
 
 def test_cloth_image1():
@@ -53,4 +53,16 @@ def test_cloth_image5():
     project_path = dirname(dirname(abspath(__file__)))
     image = Image.open(join(project_path, "clothes_images", "TOB22T016-G11@2.jpg"))
     put_alpha(image)
-    assert from_image_to_colors(image) == ["red"]
+    assert from_image_to_colors(image) == ["alizarin"]
+
+def test_cloth_image6():
+    project_path = dirname(dirname(abspath(__file__)))
+    image = Image.open(join(project_path, "clothes_images", "PI922SA08-E11@10.jpg"))
+    put_alpha(image)
+    assert from_image_to_colors(image) == ["yellow"]
+
+def test_cloth_image7():
+    project_path = dirname(dirname(abspath(__file__)))
+    image = Image.open(join(project_path, "clothes_images", "UR622S03F-T11@13.1.jpg"))
+    put_alpha(image)
+    assert from_image_to_colors(image) == ["beige", "blue", "red"]
