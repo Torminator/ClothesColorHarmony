@@ -5,40 +5,70 @@ import csv
 from colorharmony.nearstkeydict import NearstKeyDict
 # from nearstkeydict import NearstKeyDict
 from scipy.spatial import distance
-from PIL import Image, ImageFilter
+from PIL import Image
+import numpy as np
+from sklearn.cluster import KMeans
 
-cloth = collections.namedtuple("tag", "colors")
+Cloth = collections.namedtuple("Cloth", ["tag", "colors"])
 
-def from_image_to_colors(image, debug=False):
+# join(project_path, "clothes_images", "S1721C052-Q11@5.1.jpg")
+
+def create_cloth_from_image(image_path, tag, min_area_in_perecent=0.1, debug=False):
+    image_data = load_preprocess_image(image_path)
+    colors = cluster_image_into_colors(image_data, min_area_in_perecent, debug)
+    # colorname_dict = load_colortable_as_dict()
+    return Cloth(tag=tag, colors=colors)
+
+def load_preprocess_image(image_path):
+    image = Image.open(image_path)
+    # Set the background to transparent
+    image_threshold = image.convert(mode="L").point(lambda i: i < 245 and 255)
+    image.putalpha(image_threshold)
     image = image.resize((64,92), Image.LANCZOS)
-    #image.show()
-    colors = image.getcolors(1000000)
-    colorname_table = load_colortable_as_dict()
-    colors_in_image = collections.defaultdict(int)
-    for color in colors:
-        if color[1][-1] == 0:
+    return np.array(image.getdata())
+
+def cluster_image_into_colors(image_data, min_area_in_perecent, debug):
+    colors_count_list = []
+    for n in range(2, 11):
+        kmeans = KMeans(n_clusters=n, random_state=101).fit(image_data)
+        # First filter every color center with an alpha smaller than 200.
+        # It means it is a background color.
+        colors_count = {tuple(np.round(center[:-1])): sum(kmeans.labels_ == index)
+                        for index, center in enumerate(kmeans.cluster_centers_)
+                        if center[-1] > 200}
+        # Second filter every color center which area is too small
+        total_cloth_pixels = sum(count for count in colors_count.values())
+        colors_count = {key: count for key, count in colors_count.items()
+                        if count > min_area_in_perecent*total_cloth_pixels}
+
+        colors_count_list.append(colors_count)
+
+        if debug:
+            print(n)
+            print(kmeans.cluster_centers_)
+            print(colors_count)
+            print("----------------")
+
+        # rules to decide when to stop searching for better colors
+        # to compare we need a first entry
+        if n == 2:
             continue
-        colors_in_image[colorname_table[color[1][:-1]]] += color[0]
 
-    colored_pixels = sum([val for val in colors_in_image.values()])
-    print(colored_pixels*0.1)
-
-    colors_list = sorted({k: v for k,v in colors_in_image.items() if v > colored_pixels*0.1},
-                    key=colors_in_image.get, reverse=True)
-
-    colortypes = load_colortypes()
-
-    colortypes_in_image = [colortypes[color] for color in colors_list]
-    unique_colortypes = set(colortypes_in_image)
-
-    if debug:
-        print(colors_in_image)
-
-    for u_c in unique_colortypes:
-        u_c_indicies = [index for index, colortype in enumerate(colortypes_in_image)
-                            if colortype == u_c]
-
-    return [colors_list[colortypes_in_image.index(u_c)] for u_c in unique_colortypes]
+        if len(colors_count) > len(colors_count_list[n-3]):
+            distance_pairwise = distance.cdist(list(colors_count_list[n-3].keys()),
+                                    list(colors_count.keys()))
+            for row in distance_pairwise:
+                for distance1 in row:
+                    for distance2 in row:
+                        if distance1 == distance2:
+                            break
+                        if abs(distance1 - distance2) < 30 and distance1 < 50 and distance2 < 50:
+                            return list(colors_count_list[n-3].keys())
+        else:
+            if n > 3:
+                if len(colors_count) == len(colors_count_list[n-4]):
+                    return list(colors_count_list[n-3].keys())
+    return list(colors_count_list[-1].keys())
 
 def load_colortable_as_dict():
     project_path = dirname(dirname(abspath(__file__)))
@@ -52,30 +82,15 @@ def load_colortable_as_dict():
 
     return NearstKeyDict(colorname_dict, distance.euclidean)
 
-def load_colortypes():
-    project_path = dirname(dirname(abspath(__file__)))
-    with open(join(project_path, "colorname_table_random.csv")) as csvfile:
-        colorname_table = csv.reader(csvfile, delimiter=",", quotechar='"')
-        # skip header
-        next(colorname_table)
-        colortype_dict = {}
-        for color in colorname_table:
-            colortype_dict[color[0]] = color[2]
+# def load_colortypes():
+#     project_path = dirname(dirname(abspath(__file__)))
+#     with open(join(project_path, "colorname_table_random.csv")) as csvfile:
+#         colorname_table = csv.reader(csvfile, delimiter=",", quotechar='"')
+#         # skip header
+#         next(colorname_table)
 
-    return colortype_dict
-
-def put_alpha(image):
-    image_threshold = image.convert(mode="L").point(lambda i: i < 245 and 255)
-    image.putalpha(image_threshold)
-
-
-
-if __name__ == "__main__":
-    project_path = dirname(dirname(abspath(__file__)))
-    image = Image.open(join(project_path, "clothes_images", "S1721C052-Q11@5.1.jpg"))
-    put_alpha(image)
-    image.show()
-
-    colors = from_image_to_colors(image, debug=True)#
-
-    print(colors)
+#         colortype_dict = {}
+#         for color in colorname_table:
+#             colortype_dict[color[0]] = color[2]
+#
+#     return colortype_dict
