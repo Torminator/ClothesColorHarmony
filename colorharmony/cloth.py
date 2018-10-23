@@ -1,9 +1,7 @@
 import collections
-import itertools
 from os.path import dirname, abspath, join
 import csv
 from colorharmony.nearstkeydict import NearstKeyDict
-# from nearstkeydict import NearstKeyDict
 from scipy.spatial import distance
 from PIL import Image
 import numpy as np
@@ -11,12 +9,9 @@ from sklearn.cluster import KMeans
 
 Cloth = collections.namedtuple("Cloth", ["tag", "colors"])
 
-# join(project_path, "clothes_images", "S1721C052-Q11@5.1.jpg")
-
 def create_cloth_from_image(image_path, tag, min_area_in_perecent=0.1, debug=False):
     image_data = load_preprocess_image(image_path)
     colors = cluster_image_into_colors(image_data, min_area_in_perecent, debug)
-    # colorname_dict = load_colortable_as_dict()
     return Cloth(tag=tag, colors=colors)
 
 def load_preprocess_image(image_path):
@@ -81,16 +76,3 @@ def load_colortable_as_dict():
             colorname_dict[eval(color[1])] = color[0]
 
     return NearstKeyDict(colorname_dict, distance.euclidean)
-
-# def load_colortypes():
-#     project_path = dirname(dirname(abspath(__file__)))
-#     with open(join(project_path, "colorname_table_random.csv")) as csvfile:
-#         colorname_table = csv.reader(csvfile, delimiter=",", quotechar='"')
-#         # skip header
-#         next(colorname_table)
-
-#         colortype_dict = {}
-#         for color in colorname_table:
-#             colortype_dict[color[0]] = color[2]
-#
-#     return colortype_dict

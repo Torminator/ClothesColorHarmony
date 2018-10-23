@@ -7,7 +7,7 @@ class Outfit():
         for cloth in clothes:
             if cloth.tag not in seen:
                 seen[cloth.tag] = cloth
-        self.clothes = list(seen.values())
+        self.clothes = seen.values()
 
     def is_harmonius():
         return True
