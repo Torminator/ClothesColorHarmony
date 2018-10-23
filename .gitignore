@@ -1,0 +1,16 @@
+# Python byte-compiled
+colorharmony/__pycache__/
+tests/__pycache__/
+.cache/
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# Colortable files
+colorname_table.csv
+colorname_table_3cube.csv
+colorname_table_big.csv
+colorname_table_small.csv
+
+# Clothes images
+clothes_images/
