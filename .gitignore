@@ -7,10 +7,10 @@ tests/__pycache__/
 .ipynb_checkpoints/
 
 # Colortable files
-colorname_table.csv
-colorname_table_3cube.csv
-colorname_table_big.csv
-colorname_table_small.csv
+color_tables/colorname_table.csv
+color_tables/colorname_table_3cube.csv
+color_tables/colorname_table_big.csv
+color_tables/colorname_table_small.csv
 
 # Clothes images
 clothes_images/
