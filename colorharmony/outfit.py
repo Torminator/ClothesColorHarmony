@@ -9,5 +9,5 @@ class Outfit():
                 seen[cloth.tag] = cloth
         self.clothes = seen.values()
 
-    def is_harmonius():
+    def is_harmonious():
         return True

@@ -11,6 +11,8 @@ color_tables/colorname_table.csv
 color_tables/colorname_table_3cube.csv
 color_tables/colorname_table_big.csv
 color_tables/colorname_table_small.csv
+color_tables/real_munsell_to_xyY.dat
+color_tables/real_sRGB-1.xls
 
 # Clothes images
 clothes_images/

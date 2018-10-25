@@ -67,7 +67,7 @@ def cluster_image_into_colors(image_data, min_area_in_perecent, debug):
 
 def load_colortable_as_dict():
     project_path = dirname(dirname(abspath(__file__)))
-    with open(join(project_path, "colorname_table_random.csv")) as csvfile:
+    with open(join(project_path, "color_tables", "colorname_table_random.csv")) as csvfile:
         colorname_table = csv.reader(csvfile, delimiter=",", quotechar='"')
         # skip header
         next(colorname_table)
