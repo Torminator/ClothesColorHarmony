@@ -3,7 +3,17 @@ from colorharmony.nearstkeydict import NearstKeyDict
 from scipy.spatial import distance
 import csv
 
-def construct_rgb_to_munsell():
+class Munsell(NearstKeyDict):
+
+     def __init__(self):
+         super().__init__(load_munsell_dict(), distance.euclidean)
+         self.complementary_dict = construct_complementary_colors_in_munsell()
+         self.analogous_dict = construct_analogous_colors_in_munsell()
+
+    def is_complementary(color1, color2):
+        return (self.complementary_dict[color1[0]], color1[1], color1[2]) == color2
+
+def load_munsell_dict():
     project_path = dirname(dirname(abspath(__file__)))
     with open(join(project_path, "color_tables", "real_sRGB.csv")) as csvfile:
         color_table = csv.reader(csvfile, delimiter=",", quotechar='"')
@@ -13,7 +23,7 @@ def construct_rgb_to_munsell():
         for color in color_table:
             munsell_dict[(eval(color[16]), eval(color[17]), eval(color[18]))] = (color[1], eval(color[2]), eval(color[3]))
 
-    return NearstKeyDict(munsell_dict, distance.euclidean)
+    return munsell_dict
 
 def construct_complementary_colors_in_munsell():
     complementary_colors = [('R', 'BG'), ('YR', 'B'), ('Y', 'PB'), ('GY', 'P'), ('G', 'RP')]
