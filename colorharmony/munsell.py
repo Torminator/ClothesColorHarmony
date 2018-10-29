@@ -5,13 +5,16 @@ import csv
 
 class Munsell(NearstKeyDict):
 
-     def __init__(self):
-         super().__init__(load_munsell_dict(), distance.euclidean)
-         self.complementary_dict = construct_complementary_colors_in_munsell()
-         self.analogous_dict = construct_analogous_colors_in_munsell()
+    def __init__(self):
+        super().__init__(load_munsell_dict(), distance.euclidean)
+        self.complementary_dict = construct_complementary_colors_in_munsell()
+        self.analogous_dict = construct_analogous_colors_in_munsell()
 
-    def is_complementary(color1, color2):
+    def is_complementary(self, color1, color2):
         return (self.complementary_dict[color1[0]], color1[1], color1[2]) == color2
+
+    def revert_mapping(self):
+        self.data = {value: key for key,value in self.data.items()}
 
 def load_munsell_dict():
     project_path = dirname(dirname(abspath(__file__)))
