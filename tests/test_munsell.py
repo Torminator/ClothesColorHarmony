@@ -1,29 +1,41 @@
 import pytest
-from colorharmony.munsell import construct_rgb_to_munsell, construct_complementary_colors_in_munsell, construct_analogous_colors_in_munsell
+from colorharmony.munsell import Munsell, construct_analogous_colors_in_munsell, construct_complementary_colors_in_munsell
 
 
 @pytest.fixture
-def rgb_to_munsell():
-    return construct_rgb_to_munsell()
+def munsell():
+    return Munsell()
 
-def test_rgb_to_munsell1(rgb_to_munsell):
-    assert rgb_to_munsell[(166, 144, 143)] == ('5R', 6, 2)
+def test_rgb_to_munsell1(munsell):
+    assert munsell[(166, 144, 143)] == ('5R', 6, 2)
+
+def test_munsell_complementary(munsell):
+    assert munsell.is_complementary(('5R', 6, 2), ('5BG', 6, 2)) is True
+
+def test_munsell_not_complementary1(munsell):
+    assert munsell.is_complementary(('5R', 6, 2), ('5PB', 6, 3)) is False
+
+def test_munsell_not_complementary2(munsell):
+    assert munsell.is_complementary(('5R', 6, 2), ('5PB', 7, 2)) is False
+
+def test_munsell_not_complementary3(munsell):
+    assert munsell.is_complementary(('5R', 6, 2), ('5R', 6, 2)) is False
 
 @pytest.fixture
 def analogous_colors():
     return construct_analogous_colors_in_munsell()
 
 def test_analogous_colors1(analogous_colors):
-    assert analogous_colors['2.5R'] == ('2.5YR', '2.5RP')
+    assert analogous_colors['2.5R'] == ('10RP', '5R')
 
 def test_analogous_colors2(analogous_colors):
-    assert analogous_colors['5GY'] == ('5G', '5Y')
+    assert analogous_colors['5GY'] == ('2.5GY', '7.5GY')
 
 def test_analogous_colors3(analogous_colors):
-    assert analogous_colors['7.5B'] == ('7.5PB', '7.5BG')
+    assert analogous_colors['7.5B'] == ('5B', '10B')
 
 def test_analogous_colors4(analogous_colors):
-    assert analogous_colors['10PB'] == ('10P', '10B')
+    assert analogous_colors['10PB'] == ('7.5PB', '2.5P')
 
 @pytest.fixture
 def complementary_colors():

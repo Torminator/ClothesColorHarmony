@@ -13,6 +13,9 @@ class Munsell(NearstKeyDict):
     def is_complementary(self, color1, color2):
         return (self.complementary_dict[color1[0]], color1[1], color1[2]) == color2
 
+    def is_complementary_rgb(self, color1, color2):
+        return self.is_complementary(self.data[color1], self.data[color2])
+
     def revert_mapping(self):
         self.data = {value: key for key,value in self.data.items()}
 
@@ -40,9 +43,10 @@ def construct_complementary_colors_in_munsell():
 
 def construct_analogous_colors_in_munsell():
     analogous_colors = ['RP', 'R', 'YR', 'Y', 'GY', 'G', 'BG', 'B', 'PB', 'P', 'RP', 'R']
+    numbers = [10, 2.5, 5, 7.5, 10, 2.5]
     analogous_dict = {}
     for i in range(1, len(analogous_colors)-1):
-        for num in [2.5, 5, 7.5, 10]:
-            analogous_dict['{}{}'.format(num, analogous_colors[i])] = ('{}{}'.format(num, analogous_colors[i+1]),
-                '{}{}'.format(num, analogous_colors[i-1]))
+        for j in range(1, len(numbers)-1):
+            analogous_dict['{}{}'.format(numbers[j], analogous_colors[i])] = ('{}{}'.format(numbers[j-1], analogous_colors[i+int((j-4)/3)]),
+                   '{}{}'.format(numbers[j+1], analogous_colors[i+int(j/4)]))
     return analogous_dict
